@@ -3,10 +3,9 @@ import postanalyzer
 import smakstats
 import tsconverter
 
+import json
 import os.path as op
 import plac
-
-import json
 
 """
 	Social media analytics tool written in Python with Textacy.
