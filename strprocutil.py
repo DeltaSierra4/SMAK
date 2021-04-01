@@ -354,16 +354,3 @@ def wordcloud_preproc(posts, is_dic):
 		post_legit_words = [w for w in post_words if not number_and_punccheck(w)]
 		processed_words.append(" ".join(post_legit_words))
 	return processed_words
-
-
-"""
-	Load a list of stopwords.
-"""
-
-
-def load_stopwords():
-	stopwords = []
-	with open('./stopwords_en.txt', 'r') as f:
-		for line in f:
-			stopwords.append(line.strip())
-	return stopwords

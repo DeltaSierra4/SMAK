@@ -1,4 +1,5 @@
 from collections import defaultdict
+from wordcloud import STOPWORDS
 
 import textacy
 import textacy.ke
@@ -446,7 +447,7 @@ def post_counts(master_dic, username, sub_directories):
 
 
 def wordcount_generator(posts, monthly_wordcloud, name, y_m_str):
-	stopword_list = strprocutil.load_stopwords()
+	stopword_list = STOPWORDS
 	for post in posts:
 		wordlist = post.split()
 		wordset = set(wordlist)

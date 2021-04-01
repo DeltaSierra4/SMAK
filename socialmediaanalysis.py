@@ -1,5 +1,6 @@
 import jsonloader
 import postanalyzer
+import resultvisualizer
 import smakstats
 import tsconverter
 
@@ -67,6 +68,9 @@ def main(data_dir, username):
 	# Save count results as JSON file.
 	with open("./count_results.json", 'w+') as f2:
 		json.dump(pruned_count_dic, f2, indent=4, sort_keys=True)
+
+	resultvisualizer.wordcloud_gen(pruned_result_dic)
+	resultvisualizer.url_chart_gen(pruned_result_dic)
 
 
 if __name__ == "__main__":
