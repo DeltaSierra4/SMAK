@@ -1,6 +1,8 @@
 spacy==2.3.5
 textacy==0.10.1
 plac==0.9.6
-matplotlib==3.4.1
+numpy==1.19.0
 pandas==1.2.3
+pillow==7.0.0
+matplotlib==3.4.1
 wordcloud==1.8.1
