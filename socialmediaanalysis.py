@@ -71,7 +71,8 @@ def main(data_dir, username):
 
 	resultvisualizer.wordcloud_gen(pruned_result_dic)
 	resultvisualizer.url_chart_gen(pruned_result_dic)
-
+	resultvisualizer.stat_chart_gen(pruned_result_dic)
+	
 
 if __name__ == "__main__":
 	plac.call(main)

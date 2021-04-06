@@ -446,18 +446,16 @@ def post_counts(master_dic, username, sub_directories):
 
 
 def wordcount_generator(posts, monthly_wordcloud, name, y_m_str):
-	stopword_list = strprocutil.load_stopwords()
 	for post in posts:
 		wordlist = post.split()
 		wordset = set(wordlist)
 		for individual_word in wordset:
-			if individual_word not in stopword_list:
-				if name is not None:
-					monthly_wordcloud[name][y_m_str][individual_word] += \
-						wordlist.count(individual_word)
-				else:
-					monthly_wordcloud[y_m_str][individual_word] += \
-						wordlist.count(individual_word)
+			if name is not None:
+				monthly_wordcloud[name][y_m_str][individual_word] += \
+					wordlist.count(individual_word)
+			else:
+				monthly_wordcloud[y_m_str][individual_word] += \
+					wordlist.count(individual_word)
 
 
 """
@@ -472,6 +470,7 @@ def wordcount_generator(posts, monthly_wordcloud, name, y_m_str):
 def keyterm_stats_generator(
 	posts, en, monthly_sgrank, monthly_textrank, monthly_statistics, y_m_str
 ):
+	stopword_list = strprocutil.load_stopwords()
 	for i in range(len(posts)):
 		post = posts[i]
 		# Use only lower case for keyterm extraction. Leave case alone for
@@ -485,9 +484,11 @@ def keyterm_stats_generator(
 			curdoc_kt, normalize="lower", topn=0.3
 		)
 		for word in curdoc_ranks_sg:
-			monthly_sgrank[y_m_str][word[0]] += 1
+			if word[0] not in stopword_list:
+				monthly_sgrank[y_m_str][word[0]] += 1
 		for word in curdoc_ranks_tr:
-			monthly_textrank[y_m_str][word[0]] += 1
+			if word[0] not in stopword_list:
+				monthly_textrank[y_m_str][word[0]] += 1
 
 		if monthly_statistics is None:
 			continue

@@ -348,10 +348,13 @@ def wordcloud_preproc(posts, is_dic):
 	pl = [
 		preprocessing.remove_punctuation(p).lower().strip() for p in posts
 	]
+	stopwords = load_stopwords()
 	processed_words = []
 	for post in pl:
 		post_words = post.split()
-		post_legit_words = [w for w in post_words if not number_and_punccheck(w)]
+		post_legit_words = [
+			w for w in post_words if not number_and_punccheck(w) and w not in stopwords
+		]
 		processed_words.append(" ".join(post_legit_words))
 	return processed_words
 
