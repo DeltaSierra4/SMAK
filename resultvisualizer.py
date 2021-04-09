@@ -1,9 +1,9 @@
 from wordcloud import WordCloud, STOPWORDS
 from collections import defaultdict
-from PIL import Image
 import matplotlib.pyplot as plt
-#import numpy as np
-#import pandas as pd
+# from PIL import Image
+# import numpy as np
+# import pandas as pd
 import os
 
 
@@ -157,8 +157,130 @@ def statchart_gen_cross(result_dic, set_type, init_path):
 			plt.clf()
 
 
-def stat_chart_gen_count(pruned_count_dic):
+"""
+{
+    "comments": {
+        "annual": {
+            "sorted_by_date": {
+                "NonGroup": {
+                    "Comments": {
+                        "2021": {
+                            "Aaron L Dosser": {
+                                "charcount_only": [
+                                    "Mine ranges between 92 and 100.",
+                                    31
+                                ],
+                                "count": 1,
+                "Anime Central": {
+                    "Comments": {
+                        "2021": {
+                            "Arturo Cabral": {
+                                "charcount_only": [
+                                    "Yeah no, 2003 sucked for me lol",
+                                    31
+                                ],
+                                "count": 1,
+                    "Replies": {
+                        "2021": {
+                            "Anthony Banchieri": {
+                                "charcount_only": [
+                                    "Not so soon, especially with the new variants popping up and rendering the vaccines less effective.",
+                                    99
+                                ],
+                                "count": 1,
+            "sorted_by_name": {
+                "NonGroup": {
+                    "Comments": {
+                        "Aaron L Dosser": {
+                            "2020": {
+                                "charcount_only": [
+                                    "Mine ranges between 92 and 100.",
+                                    31
+                                ],
+                                "count": 1,
+    "messages": {
+        "annual": {
+            "sorted_by_date": {
+                "Group": {
+                    "2021": {
+                        "Con 2021 Fam": {
+                            "charcount_avg": 49.46349206349206,
+                            "charcount_max": [
+                                "Yeah I can\u2019t get the vaccine until Summer most likely and I dunno if I have covid (not like I want to get infected for the sake of immunity since I heard it can wreck your body if unlucky). Depending on what happens over the next four/five weeks jujucon may be a no for me",
+                                272
+                            ],
+                            "charcount_med": 38,
+                            "charcount_min": [
+                                "Me",
+                                2
+                            ],
+                            "charcount_std": 39.69759615685689,
+                            "count": 316,
+                "NonGroup": {
+                    "2021": {
+                        "Aldwin Gordula": {
+                            "charcount_avg": 41,
+                            "charcount_max": [
+                                "If this is on Chicago mahjong discord go abead I\u2019ll join",
+                                56
+                            ],
+                            "charcount_med": 41.0,
+                            "charcount_min": [
+                                "review his games or books?",
+                                26
+                            ],
+                            "charcount_std": 21.213203435596427,
+                            "count": 2,
+            "sorted_by_name": {
+                "Group": {
+                    "Con 2021 Fam": {
+                        "2021": {
+                            "charcount_avg": 49.46349206349206,
+                            "charcount_max": [
+                                "Yeah I can\u2019t get the vaccine until Summer most likely and I dunno if I have covid (not like I want to get infected for the sake of immunity since I heard it can wreck your body if unlucky). Depending on what happens over the next four/five weeks jujucon may be a no for me",
+                                272
+                            ],
+                            "charcount_med": 38,
+                            "charcount_min": [
+                                "Me",
+                                2
+                            ],
+                            "charcount_std": 39.69759615685689,
+                            "count": 316,
+    "posts": {
+        "annual": {
+            "sorted_by_date": {
+                "2021": {
+                    "Aaron Hill": {
+                        "charcount_only": [
+                            "Happy birthday!",
+                            15
+                        ],
+                        "count": 1,
+            "sorted_by_name": {
+                "Aaron Hill": {
+                    "2020": {
+                        "charcount_only": [
+                            "Happy birthday!",
+                            15
+                        ],
+                        "count": 1,
+"""
+
+
+def stat_chart_gen_count(count_dic):
+	results_dir = "results"
+	create_dir(results_dir)
+	postcount_dir = create_dir(results_dir, "post_count_stats")
 	return
+	for cat, cat_results in count_dic.items():
+		cat_dir = create_dir(postcount_dir, cat)
+		if set_type.split("_")[1] == "cat":
+			for cat, cat_results in batch.items():
+				cat_dir = create_dir(set_dir, cat)
+				statchart_gen_cross(batch[cat], set_type, cat_dir)
+		else:
+			statchart_gen_cross(result_dic[set_type], set_type, set_dir)
 
 
 def create_dir(path, addn_path=None):

@@ -69,6 +69,7 @@ def iter_conv(dic):
 					"hour": int(datetime.fromtimestamp(p["ts"]).hour),
 					"post": p["post"],
 					"type": p.get("type", ""),
+					"Group name": p.get("Group name", "")
 				} for p in value
 			]
 
@@ -135,5 +136,7 @@ def iter_sort(dic):
 					"post": post["post"],
 					"type": post.get("type", ""),
 				}
+				if "Group name" in post.keys():
+					post_dic["Group name"] = post["Group name"]
 				sorted_dic[p_y][p_m][p_d][p_dt].append(post_dic)
 			dic[key] = sorted_dic

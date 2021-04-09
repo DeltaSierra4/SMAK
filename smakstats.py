@@ -300,3 +300,5 @@ def stats_counts_recursive(dic, res_dic):
 				res_dic[(k + "_min")] = stat_sorted[-1]
 			else:
 				res_dic[(k + "_only")] = stat_sorted[0]
+		else:
+			res_dic[k] = v
