@@ -119,6 +119,8 @@ def stat_chart_gen(result_dic):
 			statchart_gen_cross(result_dic[set_type], set_type, set_dir)
 
 
+# TODO: Find a way to display the longest posts and/or the most random
+# posts?
 def statchart_gen_cross(result_dic, set_type, init_path):
 	for stat, stat_results in result_dic.items():
 		if "statistics" not in stat:
@@ -157,130 +159,109 @@ def statchart_gen_cross(result_dic, set_type, init_path):
 			plt.clf()
 
 
-"""
-{
-    "comments": {
-        "annual": {
-            "sorted_by_date": {
-                "NonGroup": {
-                    "Comments": {
-                        "2021": {
-                            "Aaron L Dosser": {
-                                "charcount_only": [
-                                    "Mine ranges between 92 and 100.",
-                                    31
-                                ],
-                                "count": 1,
-                "Anime Central": {
-                    "Comments": {
-                        "2021": {
-                            "Arturo Cabral": {
-                                "charcount_only": [
-                                    "Yeah no, 2003 sucked for me lol",
-                                    31
-                                ],
-                                "count": 1,
-                    "Replies": {
-                        "2021": {
-                            "Anthony Banchieri": {
-                                "charcount_only": [
-                                    "Not so soon, especially with the new variants popping up and rendering the vaccines less effective.",
-                                    99
-                                ],
-                                "count": 1,
-            "sorted_by_name": {
-                "NonGroup": {
-                    "Comments": {
-                        "Aaron L Dosser": {
-                            "2020": {
-                                "charcount_only": [
-                                    "Mine ranges between 92 and 100.",
-                                    31
-                                ],
-                                "count": 1,
-    "messages": {
-        "annual": {
-            "sorted_by_date": {
-                "Group": {
-                    "2021": {
-                        "Con 2021 Fam": {
-                            "charcount_avg": 49.46349206349206,
-                            "charcount_max": [
-                                "Yeah I can\u2019t get the vaccine until Summer most likely and I dunno if I have covid (not like I want to get infected for the sake of immunity since I heard it can wreck your body if unlucky). Depending on what happens over the next four/five weeks jujucon may be a no for me",
-                                272
-                            ],
-                            "charcount_med": 38,
-                            "charcount_min": [
-                                "Me",
-                                2
-                            ],
-                            "charcount_std": 39.69759615685689,
-                            "count": 316,
-                "NonGroup": {
-                    "2021": {
-                        "Aldwin Gordula": {
-                            "charcount_avg": 41,
-                            "charcount_max": [
-                                "If this is on Chicago mahjong discord go abead I\u2019ll join",
-                                56
-                            ],
-                            "charcount_med": 41.0,
-                            "charcount_min": [
-                                "review his games or books?",
-                                26
-                            ],
-                            "charcount_std": 21.213203435596427,
-                            "count": 2,
-            "sorted_by_name": {
-                "Group": {
-                    "Con 2021 Fam": {
-                        "2021": {
-                            "charcount_avg": 49.46349206349206,
-                            "charcount_max": [
-                                "Yeah I can\u2019t get the vaccine until Summer most likely and I dunno if I have covid (not like I want to get infected for the sake of immunity since I heard it can wreck your body if unlucky). Depending on what happens over the next four/five weeks jujucon may be a no for me",
-                                272
-                            ],
-                            "charcount_med": 38,
-                            "charcount_min": [
-                                "Me",
-                                2
-                            ],
-                            "charcount_std": 39.69759615685689,
-                            "count": 316,
-    "posts": {
-        "annual": {
-            "sorted_by_date": {
-                "2021": {
-                    "Aaron Hill": {
-                        "charcount_only": [
-                            "Happy birthday!",
-                            15
-                        ],
-                        "count": 1,
-            "sorted_by_name": {
-                "Aaron Hill": {
-                    "2020": {
-                        "charcount_only": [
-                            "Happy birthday!",
-                            15
-                        ],
-                        "count": 1,
-"""
-
-
 def stat_chart_gen_count(count_dic):
+	extra_step_per_cat = {
+		"comments": 2,
+		"messages": 1,
+		"posts": 0,
+	}
 	results_dir = "results"
 	create_dir(results_dir)
 	postcount_dir = create_dir(results_dir, "post_count_stats")
-	return
 	for cat, cat_results in count_dic.items():
 		cat_dir = create_dir(postcount_dir, cat)
-		if set_type.split("_")[1] == "cat":
-			for cat, cat_results in batch.items():
-				cat_dir = create_dir(set_dir, cat)
-				statchart_gen_cross(batch[cat], set_type, cat_dir)
+		stat_chat_gen_count_recursion(
+			cat_results, cat_dir, cat_step=extra_step_per_cat[cat]
+		)
+
+
+def stat_chat_gen_count_recursion(
+	dic, dir, cat_step=0, remain_steps=-1, sort_by=None
+):
+	for key, value in dic.items():
+		if remain_steps == 0:
+			stat_chat_gen_count_final(key, value, dir, sort_by)
+			continue
+		new_dir = create_dir(dir, key)
+		if "sorted_by" in key:
+			stat_chat_gen_count_recursion(
+				value, new_dir, remain_steps=cat_step, sort_by=key
+			)
 		else:
-			statchart_gen_cross(result_dic[set_type], set_type, set_dir)
+			stat_chat_gen_count_recursion(
+				value, new_dir, cat_step, (remain_steps - 1), sort_by
+			)
+
+
+# TODO: Find a way to display the longest posts and/or the most random
+# posts?
+def stat_chat_gen_count_final(key, dic, dir, sort_by):
+	# At this point, key can either be a timeframe or a username.
+	# If sort_by == "sorted_by_date", then key is a timeframe.
+	# If sort_by == "sorted_by_name", then key is a username.
+
+	# If key is a username, then we generate a line graph for that user
+	# to display trends across time. If it's a timeframe, then we generate
+	# a bar graph to display the top half and bottom half of the relevant stat
+	# during that timeframe.
+	stat_combiner = defaultdict(lambda: {})
+	new_dir = create_dir(dir, key)
+	for inner_key, stat_dic in dic.items():
+		if inner_key == "global":
+			continue
+		for stat_type, value in stat_dic.items():
+			if "_only" in stat_type:
+				stat_avg = "_".join([stat_type.split("_")[0], "avg"])
+				stat_med = "_".join([stat_type.split("_")[0], "med"])
+				stat_max = "_".join([stat_type.split("_")[0], "max"])
+				stat_min = "_".join([stat_type.split("_")[0], "min"])
+				stat_std = "_".join([stat_type.split("_")[0], "std"])
+				stat_combiner[stat_avg][inner_key] = value[1]
+				stat_combiner[stat_med][inner_key] = value[1]
+				stat_combiner[stat_max][inner_key] = value[1]
+				stat_combiner[stat_min][inner_key] = value[1]
+				stat_combiner[stat_std][inner_key] = value[1]
+			else:
+				if isinstance(value, (int, float)):
+					stat_combiner[stat_type][inner_key] = value
+				else:
+					stat_combiner[stat_type][inner_key] = value[1]
+
+	for stat_type, stat_dic in stat_combiner.items():
+		file_name = os.path.join(new_dir, stat_type + ".png")
+		if "date" in sort_by:
+			stats_sorted = sorted(
+				stat_dic.items(), key=lambda val: val[1], reverse=True
+			)
+			names = [pair[0] for pair in stats_sorted]
+			stat_vals = [pair[1] for pair in stats_sorted]
+			color1 = ['red'] * int(len(names) / 2)
+			color2 = ['blue'] * (len(names) - int(len(names) / 2))
+			color = color1 + color2
+			# If we have more than 20 users, cut them into top 10 and bottom
+			# 10 for the category in question.
+			if len(names) > 20:
+				names = names[:10] + ["..."] + names[-10:]
+				stat_vals = stat_vals[:10] + [0] + stat_vals[-10:]
+				color1 = ['red'] * 10
+				color2 = ['blue'] * 10
+				color[11] = 'white'
+			plt.xticks(rotation=90)
+			plt.gcf().subplots_adjust(bottom=0.4)
+			plt.bar(names, stat_vals, color=color)
+			plt.savefig(file_name)
+			plt.clf()
+		else:
+			time_per = stat_dic.keys()
+			stat_vals = stat_dic.values()
+			plt.xticks(rotation=90)
+			plt.gcf().subplots_adjust(bottom=0.25)
+			plt.plot(time_per, stat_vals)
+			plt.title(key)
+			plt.xlabel(stat_type)
+			plt.ylabel('value')
+			plt.savefig(file_name)
+			plt.clf()
 
 
 def create_dir(path, addn_path=None):
