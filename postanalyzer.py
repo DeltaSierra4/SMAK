@@ -246,7 +246,7 @@ def analyze_messages(mess_dic, en, username=""):
 	)
 
 
-def count_comments(comm_dic, en, username=""):
+def count_comments(comm_dic, en, count_config, username=""):
 	post_count_res_date = defaultdict(
 		lambda: defaultdict(
 			lambda: defaultdict(lambda: defaultdict(lambda: {}))
@@ -270,7 +270,7 @@ def count_comments(comm_dic, en, username=""):
 			else:
 				for name, person_posts in pset.items():
 					count_comments_helper(
-						person_posts, en, return_dic, name, g, t=target
+						person_posts, en, return_dic, name, g, count_config, t=target
 					)
 	return return_dic
 
@@ -293,7 +293,9 @@ def count_comments(comm_dic, en, username=""):
 """
 
 
-def count_comments_helper(comm_dic, en, r_dic, name, group, t=None):
+def count_comments_helper(
+	comm_dic, en, r_dic, name, group, count_config, t=None
+):
 	if t == "Replies":
 		tstr = t
 	else:
@@ -314,7 +316,8 @@ def count_comments_helper(comm_dic, en, r_dic, name, group, t=None):
 					_, _, posts = strprocutil.extract_urls(post_list, True)
 					count_stats_generator(
 						posts, en, r_dic["sorted_by_date"], r_dic["sorted_by_name"],
-						len(post_list), y_m_str, name, g_name=gstrs, t_name=tstr
+						len(post_list), y_m_str, name, count_config, g_name=gstrs,
+						t_name=tstr
 					)
 
 
@@ -326,7 +329,7 @@ def count_comments_helper(comm_dic, en, r_dic, name, group, t=None):
 """
 
 
-def count_posts(post_dic, en, username=""):
+def count_posts(post_dic, en, count_config, username=""):
 	post_count_res_date = defaultdict(lambda: defaultdict(lambda: {}))
 	post_count_res_name = defaultdict(lambda: defaultdict(lambda: {}))
 	for name, person_posts in post_dic.items():
@@ -342,7 +345,7 @@ def count_posts(post_dic, en, username=""):
 						_, _, posts = strprocutil.extract_urls(post_list, False)
 						count_stats_generator(
 							posts, en, post_count_res_date, post_count_res_name,
-							len(post_list), y_m_str, name
+							len(post_list), y_m_str, name, count_config
 						)
 	return {
 		"sorted_by_date": post_count_res_date,
@@ -359,7 +362,7 @@ def count_posts(post_dic, en, username=""):
 """
 
 
-def count_messages(mess_dic, en, username=""):
+def count_messages(mess_dic, en, count_config, username=""):
 	post_count_res_date = defaultdict(
 		lambda: defaultdict(lambda: defaultdict(lambda: {}))
 	)
@@ -380,7 +383,7 @@ def count_messages(mess_dic, en, username=""):
 							_, _, posts = strprocutil.extract_urls(post_list, False)
 							count_stats_generator(
 								posts, en, post_count_res_date, post_count_res_name,
-								len(post_list), y_m_str, name, isgroup=g
+								len(post_list), y_m_str, name, count_config, isgroup=g
 							)
 	return {
 		"sorted_by_date": post_count_res_date,
@@ -429,13 +432,13 @@ def analyze(master_dic, username):
 """
 
 
-def post_counts(master_dic, username, sub_directories):
+def post_counts(master_dic, username, sub_directories, count_config):
 	en = textacy.load_spacy_lang("en_core_web_sm", disable=("parser",))
 	result_dic = {}
 	for sub in SUB_DIRECTORIES_FUNC_COUNT.keys():
 		print("Counting in directory", sub)
 		result_dic[sub] = SUB_DIRECTORIES_FUNC_COUNT[sub](
-			master_dic[sub], en, username
+			master_dic[sub], en, count_config, username
 		)
 	return result_dic
 
@@ -536,7 +539,7 @@ def keyterm_stats_generator(
 
 def count_stats_generator(
 	posts_all, en, count_date, count_name, post_count, y_m_str, name,
-	isgroup=None, g_name=None, t_name=None
+	count_config, isgroup=None, g_name=None, t_name=None
 ):
 	if g_name is None or isinstance(g_name, str):
 		posts = [p for p in posts_all if len(p) > 0]
@@ -556,6 +559,8 @@ def count_stats_generator(
 		order_by_date["stats"] = order_by_date.get("stats", defaultdict(lambda: []))
 		order_by_name["stats"] = order_by_name.get("stats", defaultdict(lambda: []))
 		for post in posts:
+			if length_limit_check(post, count_config):
+				continue
 			curdoc = textacy.make_spacy_doc(post, lang=en)
 			ts = textacy.TextStats(curdoc)
 			wc = (post, ts.n_words)
@@ -578,6 +583,8 @@ def count_stats_generator(
 			order_by_name = count_name[g_name_str][t_name][name][y_m_str]
 			order_by_date["count"] = order_by_date.get("count", 0) + 1
 			order_by_name["count"] = order_by_name.get("count", 0) + 1
+			if length_limit_check(post, count_config):
+				continue
 			order_by_date["stats"] = order_by_date.get("stats", defaultdict(lambda: []))
 			order_by_name["stats"] = order_by_name.get("stats", defaultdict(lambda: []))
 			curdoc = textacy.make_spacy_doc(post, lang=en)
@@ -623,3 +630,25 @@ def collect_results(
 	if len(monthly_textrank_hl.keys()) > 0:
 		return_dic["monthly_textrank_hl"] = monthly_textrank_hl
 	return return_dic
+
+
+"""
+	If char/word limits are set, check if the post meets the length requirements.
+	Returns True iff post does not meet the requirements, False otherwise.
+"""
+
+
+def length_limit_check(post, count_config):
+	char_limit_min = count_config["Char_limit_min"]
+	char_limit_max = count_config["Char_limit_max"]
+	word_limit_min = count_config["Word_limit_min"]
+	word_limit_max = count_config["Word_limit_max"]
+	if char_limit_min > 0 and len(post) < char_limit_min:
+		return True
+	if char_limit_max > 0 and len(post) > char_limit_max:
+		return True
+	if word_limit_min > 0 and len(post.split()) < word_limit_min:
+		return True
+	if word_limit_max > 0 and len(post.split()) > word_limit_max:
+		return True
+	return False

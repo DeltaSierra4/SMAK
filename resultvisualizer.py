@@ -235,6 +235,9 @@ def stat_chat_gen_count_final(key, dic, dir, sort_by):
 			)
 			names = [pair[0] for pair in stats_sorted]
 			stat_vals = [pair[1] for pair in stats_sorted]
+			# Minimum number of data required: 5
+			if len(names) < 5:
+				continue
 			color1 = ['red'] * int(len(names) / 2)
 			color2 = ['blue'] * (len(names) - int(len(names) / 2))
 			color = color1 + color2
@@ -245,7 +248,7 @@ def stat_chat_gen_count_final(key, dic, dir, sort_by):
 				stat_vals = stat_vals[:10] + [0] + stat_vals[-10:]
 				color1 = ['red'] * 10
 				color2 = ['blue'] * 10
-				color[11] = 'white'
+				color = color1 + ['white'] + color2
 			plt.xticks(rotation=90)
 			plt.gcf().subplots_adjust(bottom=0.4)
 			plt.bar(names, stat_vals, color=color)
@@ -262,6 +265,8 @@ def stat_chat_gen_count_final(key, dic, dir, sort_by):
 			plt.ylabel('value')
 			plt.savefig(file_name)
 			plt.clf()
+	if len(os.listdir(new_dir)) == 0:
+		os.rmdir(new_dir)
 
 
 def create_dir(path, addn_path=None):

@@ -262,19 +262,12 @@ def aggregate_counts_recursive(dic, res_dic, per=None):
 	for k, v in dic.items():
 		if "count" not in dic.keys():
 			new_k = k
-			# Check if dates are in this dictionary. If so, pool results here.
-			key_date = dic.keys()
-			is_date = True
-			for key in key_date:
-				date = key.split("-")
-				if not (len(date) == 2 and date[0].isdigit() and date[1].isdigit()):
-					# We are not in the date layer yet
-					is_date = False
-					break
-			if is_date:
+			# Check if this current level of keys is the date category.
+			ifdate = k.split("-")
+			if len(ifdate) == 2:
 				# We have found the layer containing dates.
 				if per == "annual":
-					new_k = date[0]
+					new_k = ifdate[0]
 				elif per == "global":
 					new_k = per
 			aggregate_counts_recursive(v, res_dic[new_k], per)

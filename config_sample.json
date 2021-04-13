@@ -1,0 +1,12 @@
+{
+	"Language": "en",
+	"Username": "John Doe",
+	"Datadir": "/path/to/JSON_Files",
+	"Post_types": ["comments", "messages", "posts"],
+	"Count_config": {
+		"Char_limit_min": 0,
+		"Char_limit_max": 0,
+		"Word_limit_min": 0,
+		"Word_limit_max": 0
+	}
+}
