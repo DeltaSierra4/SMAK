@@ -27,7 +27,8 @@
 		"Wordcloud_width": 1600,
 		"Wordcloud_height": 1200,
 		"Wordcloud_limit": 200,
-		"URL_chart_limit": 30,
+		"URL_chart_upper_limit": 30,
+		"URL_chart_lower_limit": 5,
 		"Min_data_count": 5,
 		"Max_data_count": 20
 	}

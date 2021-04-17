@@ -163,6 +163,28 @@ def analyzer_config_check(config_dic):
 			for more details on what to fill in this field."
 		}
 
+	sgrank_ngram = analyzer_config["SGrank_ngram"]
+	try:
+		assert len(sgrank_ngram) > 0
+	except AssertionError:
+		return {
+			"Invalid field": "Invalid values in \"Analyzer_config\" field. \
+			\"SGrank_ngram\" cannot be an empty list."
+		}
+	old_value = sgrank_ngram[0] - 1
+	try:
+		for value in sgrank_ngram:
+			assert isinstance(value, int)
+			assert value > 0
+			assert value - old_value == 1
+			old_value = value
+	except AssertionError:
+		return {
+			"Invalid field": "Invalid values in \"Analyzer_config\" field. \
+			\"SGrank_ngram\" must be a list of consecutive integers greater \
+			than 0."
+		}
+
 	sgrank_int = analyzer_config["SGrank_top_count"]
 	sgrank_float = analyzer_config["SGrank_top_ratio"]
 	try:
@@ -237,7 +259,8 @@ def visualizer_config_check(config_dic):
 		"Wordcloud_width",
 		"Wordcloud_height",
 		"Wordcloud_limit",
-		"URL_chart_limit",
+		"URL_chart_upper_limit",
+		"URL_chart_lower_limit",
 		"Min_data_count",
 		"Max_data_count"
 	}
@@ -251,6 +274,17 @@ def visualizer_config_check(config_dic):
 		return {
 			"Invalid field": "Invalid \"Visualizer_config\" field. See the README file \
 			for more details on what to fill in this field."
+		}
+
+	try:
+		min_url_count = visualizer_config["URL_chart_lower_limit"]
+		max_url_count = visualizer_config["URL_chart_upper_limit"]
+		assert min_url_count < max_url_count
+	except AssertionError:
+		return {
+			"Invalid field": "Invalid values in \"Visualizer_config\" field. \
+			\"URL_chart_lower_limit\" must be lower than \
+			\"URL_chart_upper_limit\"."
 		}
 
 	try:
