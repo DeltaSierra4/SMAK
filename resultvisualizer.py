@@ -99,7 +99,11 @@ def urlchart_gen_cross(result_dic, set_type, init_path, chart_config):
 			time_dir = create_dir(stat_dir, time)
 			file_name = os.path.join(time_dir, stat + ".png")
 
-			top_limit = chart_config["URL_chart_limit"]
+			top_limit = chart_config["URL_chart_upper_limit"]
+			low_limit = chart_config["URL_chart_lower_limit"]
+			if len(counts) < low_limit:
+				os.rmdir(time_dir)
+				continue
 			counts_top = counts[:top_limit]
 			counts_dic = {pair[0]: pair[1] for pair in counts_top}
 			plt.xticks(rotation=90)
@@ -107,8 +111,6 @@ def urlchart_gen_cross(result_dic, set_type, init_path, chart_config):
 			plt.bar(counts_dic.keys(), counts_dic.values())
 			plt.savefig(file_name)
 			plt.clf()
-			if len(os.listdir(time_dir)) == 0:
-				os.rmdir(time_dir)
 		if len(os.listdir(stat_dir)) == 0:
 			os.rmdir(stat_dir)
 
