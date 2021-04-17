@@ -344,18 +344,25 @@ def preproc_posts(posts):
 """
 
 
-def wordcloud_preproc(posts, is_dic):
+def wordcloud_preproc(posts):
 	pl = [p.lower().strip() for p in posts]
 	stopwords = load_stopwords()
 	processed_words = []
 	for post in pl:
-		post_words = post.split()
+		post_words = preprocessing.normalize_quotation_marks(post).split()
 		post_legit_words = [
 			w for w in post_words if not number_and_punccheck(w) and w not in stopwords
 		]
-		processed_words.append(
-			preprocessing.remove_punctuation(" ".join(post_legit_words))
-		)
+		for idx in range(len(post_legit_words)):
+			word = post_legit_words[idx]
+			if len(word) > 2 and word[-2:] == "'s":
+				if word[:-2] not in stopwords:
+					post_legit_words[idx] = word[:-2]
+				else:
+					post_legit_words[idx] = ""
+			post_legit_words[idx] = preprocessing.remove_punctuation(word).strip()
+		post_legit_words = [w for w in post_legit_words if len(w) > 0]
+		processed_words.append(" ".join(post_legit_words))
 	return processed_words
 
 

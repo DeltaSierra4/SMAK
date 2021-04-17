@@ -11,7 +11,7 @@ from statistics import mean, median, stdev
 """
 
 
-def parse_results(result_dic, subdirectories):
+def parse_results(result_dic, subdirectories, wordcloud_config):
 	res_dic = {
 		"monthly_cat": {},
 		"annual_cat": {},
@@ -34,10 +34,12 @@ def parse_results(result_dic, subdirectories):
 	for sub in subdirectories:
 		for per in periods:
 			res_dic[(per + "_cat")][sub] = parse_results_helper(
-				result_dic[sub], per, keys, False
+				result_dic[sub], per, keys, False, wordcloud_config
 			)
 	for per in periods:
-		res_dic[(per + "_cross")] = parse_results_helper(result_dic, per, keys, True)
+		res_dic[(per + "_cross")] = parse_results_helper(
+			result_dic, per, keys, True, wordcloud_config
+		)
 	return res_dic
 
 
@@ -53,7 +55,7 @@ def parse_results(result_dic, subdirectories):
 """
 
 
-def parse_results_helper(result_dic, per, keys, is_cross):
+def parse_results_helper(result_dic, per, keys, is_cross, wordcloud_config):
 	combine_dic = {}
 	res_dic = {}
 	for key in keys:
@@ -76,7 +78,9 @@ def parse_results_helper(result_dic, per, keys, is_cross):
 		combiner(result_dic, per, combine_dic, wordcloud_com_user)
 
 	# Step 2
-	stat_analysis(combine_dic, wordcloud_com_user, res_dic, per)
+	stat_analysis(
+		combine_dic, wordcloud_com_user, res_dic, per, wordcloud_config
+	)
 	return res_dic
 
 
@@ -117,7 +121,11 @@ def combiner(result_dic, per, combine_dic, wordcloud_com_user):
 """
 
 
-def stat_analysis(combine_dic, wordcloud_com_user, res_dic, per):
+def stat_analysis(
+	combine_dic, wordcloud_com_user, res_dic, per, wordcloud_config
+):
+	wordcloud_config_keyterm = wordcloud_config["Keyterm_limit"]
+	wordcloud_config_regular = wordcloud_config["Wordcount_limit"]
 	for k, sub_dic in combine_dic.items():
 		for t, t_dic in sub_dic.items():
 			if "statistics" not in k:
@@ -125,9 +133,9 @@ def stat_analysis(combine_dic, wordcloud_com_user, res_dic, per):
 					t_dic.items(), key=lambda val: val[1], reverse=True
 				)
 				if "rank" in k:
-					terms_sorted = terms_sorted[:100]
+					terms_sorted = terms_sorted[:wordcloud_config_keyterm]
 				elif "wordcloud" in k:
-					terms_sorted = terms_sorted[:500]
+					terms_sorted = terms_sorted[:wordcloud_config_regular]
 				res_dic[k][t] = terms_sorted
 			else:
 				for stat_type, stat_list in t_dic.items():
@@ -147,7 +155,7 @@ def stat_analysis(combine_dic, wordcloud_com_user, res_dic, per):
 		for t, wc in dic.items():
 			wordcloud_per_user[name][t] = sorted(
 				wc.items(), key=lambda val: val[1], reverse=True
-			)[:500]
+			)[:wordcloud_config_regular]
 	res_dic[per + "_wordcloud_users"] = wordcloud_per_user
 
 

@@ -19,15 +19,15 @@ import strprocutil
 """
 
 
-def load_json(data_dir, subdir, username):
+def load_json(data_dir, subdir, username, target_names):
 	component_dir = op.join(data_dir, subdir)
 	if subdir == "comments":
 		component_dir = op.join(component_dir, "comments.json")
-		return load_comment_json(component_dir, username)
+		return load_comment_json(component_dir, username, target_names)
 	elif subdir == "posts":
 		return load_post_json(
 			os.listdir(component_dir),
-			component_dir, username
+			component_dir, username, target_names
 		)
 	else:
 		# Lots of useless subdirectories here. We are only interested in the
@@ -35,7 +35,7 @@ def load_json(data_dir, subdir, username):
 		component_dir = op.join(component_dir, "inbox")
 		return load_message_json(
 			os.listdir(component_dir),
-			component_dir, username
+			component_dir, username, target_names
 		)
 
 
@@ -49,7 +49,7 @@ def load_json(data_dir, subdir, username):
 """
 
 
-def load_comment_json(comment_dir, username):
+def load_comment_json(comment_dir, username, target_names):
 	comment_dic = {
 		"NonGroup": {
 			"Own": [],
@@ -83,7 +83,7 @@ def load_comment_json(comment_dir, username):
 				if len(comment_text) == 0:
 					continue
 				c_type, o_name, c_dic = load_comment_row(
-					ts, comment_text, title, username
+					ts, comment_text, title, username, target_names
 				)
 				if c_type == "":
 					continue
@@ -115,7 +115,7 @@ def load_comment_json(comment_dir, username):
 """
 
 
-def load_post_json(post_dir_list, post_dir, username):
+def load_post_json(post_dir_list, post_dir, username, target_names):
 	valid_json = []
 	for filename in post_dir_list:
 		if "your_posts" in filename:
@@ -153,6 +153,8 @@ def load_post_json(post_dir_list, post_dir, username):
 						name = name_extractor(title, "fr", username)
 						if name == "":
 							continue
+						elif target_names is not None and name not in target_names:
+							continue
 						post_dic[name] = list(chain(post_dic[name], load_post_row(item)))
 					elif own_post(title, username):
 						# Post was made on your own wall
@@ -165,6 +167,11 @@ def load_post_json(post_dir_list, post_dir, username):
 						post_dic[name] = list(chain(post_dic[name], load_post_row(item)))
 					else:
 						# Treat these as miscellaneous posts
+						# if title == "Vincent Yang created a private event for KanColle U.S.A":
+						# if title == "Vincent Yang was attending Anime Expo 2018 - Doki Doki Literature Club Gathering":
+						# if title == "Vincent Yang was 🎉 celebrating friendship" or title == "Vincent Yang  recommends 신림마장" or title == "Vincent Yang shared an album: Penguin Base Doggos to the group: KanColle U.S.A." or title == "Vincent Yang contributed to the album: Fall 204 Event Clear in KanColle U.S.A":
+						# 	print(item)
+						# print(title)
 						post_dic["Misc_post"] = list(
 							chain(post_dic["Misc_post"], load_post_row(item))
 						)
@@ -183,7 +190,7 @@ def load_post_json(post_dir_list, post_dir, username):
 """
 
 
-def load_message_json(mess_dir_list, mess_dir, username):
+def load_message_json(mess_dir_list, mess_dir, username, target_names):
 	valid_json = []
 	for filename in mess_dir_list:
 		individual_dir = op.join(mess_dir, filename)
@@ -208,9 +215,24 @@ def load_message_json(mess_dir_list, mess_dir, username):
 				continue
 			if len(participants) <= 2:
 				# Individual message to either oneself or a friend.
+				if len(participants) == 2:
+					# Message to another friend. Check if we want to include this
+					# message if we have specific names in target_names
+					if target_names is not None and name not in target_names:
+						continue
 				mess_dic["NonGroup"][name] = messlist
 			else:
-				# Group message
+				# Group message. Check if all users in the group are in the
+				# target_names. We do not want to include group messages that
+				# include someone not included in the target_names.
+				if target_names is not None:
+					skip = False
+					for participant in participants:
+						if participant["name"] not in target_names:
+							skip = True
+							break
+					if skip:
+						continue
 				mess_dic["Group"][name] = messlist
 	return mess_dic
 
@@ -296,7 +318,7 @@ def invalid_message_json(data_row):
 """
 
 
-def load_comment_row(ts, comment, title, username):
+def load_comment_row(ts, comment, title, username, target_names):
 	c_dic = {
 		"ts": ts,
 		"post": strprocutil.convert_str(comment),
@@ -314,6 +336,8 @@ def load_comment_row(ts, comment, title, username):
 	if comment_nature != "Own":
 		comment_target = name_extractor(title, "co", username)
 		if len(comment_target) == 0:
+			return "", "", {}
+		elif target_names is not None and comment_target not in target_names:
 			return "", "", {}
 	return comment_nature, comment_target, c_dic
 

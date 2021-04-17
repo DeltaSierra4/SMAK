@@ -33,10 +33,16 @@ def main(config_path):
 	data_dir = config["Datadir"]
 	username = strprocutil.convert_unicode(config["Username"])
 	sub_directories = config["Post_types"]
+	target_names = config.get("Target_names", [])
+	if len(target_names) == 0:
+		target_names = None
+	else:
+		for nidx in range(len(target_names)):
+			target_names[nidx] = strprocutil.convert_unicode(target_names[nidx])
 
 	master_dic = {}
 	for subdir in sub_directories:
-		master_dic[subdir] = jsonloader.load_json(data_dir, subdir, username)
+		master_dic[subdir] = jsonloader.load_json(data_dir, subdir, username, target_names)
 
 	tsconverter.ts_dt_conv(master_dic, sub_directories)
 
@@ -62,9 +68,13 @@ def main(config_path):
 		dictionary.
 	"""
 
-	result_dic = postanalyzer.analyze(master_dic, username)
+	analyzer_config = config["Analyzer_config"]
+	result_dic = postanalyzer.analyze(master_dic, username, analyzer_config)
 
-	pruned_result_dic = smakstats.parse_results(result_dic, sub_directories)
+	smakstats_config = config["SMAKstats_config"]
+	pruned_result_dic = smakstats.parse_results(
+		result_dic, sub_directories, smakstats_config
+	)
 
 	# Save parse results as JSON file.
 	with open("./parse_results.json", 'w+') as f2:
@@ -76,9 +86,11 @@ def main(config_path):
 	with open("./count_results.json", 'w+') as f2:
 		json.dump(pruned_count_dic, f2, indent=4, sort_keys=True)
 
-	resultvisualizer.wordcloud_gen(pruned_result_dic)
-	resultvisualizer.url_chart_gen(pruned_result_dic)
+	visualizer_config = config["Visualizer_config"]
+	resultvisualizer.wordcloud_gen(pruned_result_dic, visualizer_config)
+	resultvisualizer.url_chart_gen(pruned_result_dic, visualizer_config)
 	resultvisualizer.stat_chart_gen(pruned_result_dic)
+	resultvisualizer.stat_chart_gen_count(pruned_count_dic, visualizer_config)
 
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ import strprocutil
 """
 
 
-def analyze_comments(comm_dic, en, username):
+def analyze_comments(comm_dic, en, stats_config, username):
 	return_dic = {
 		"monthly_url_count": defaultdict(lambda: defaultdict(lambda: 0)),
 		"monthly_wordcloud": defaultdict(
@@ -32,10 +32,14 @@ def analyze_comments(comm_dic, en, username):
 	for g, gset in comm_dic.items():
 		for target, pset in gset.items():
 			if target == "Own":
-				analyze_comments_helper(pset, username, en, return_dic)
+				analyze_comments_helper(
+					pset, username, en, return_dic, stats_config
+				)
 			else:
 				for name, person_posts in pset.items():
-					analyze_comments_helper(person_posts, name, en, return_dic)
+					analyze_comments_helper(
+						person_posts, name, en, return_dic, stats_config
+					)
 	return return_dic
 
 
@@ -57,7 +61,7 @@ def analyze_comments(comm_dic, en, username):
 """
 
 
-def analyze_comments_helper(comm_dic, name, en, r_dic):
+def analyze_comments_helper(comm_dic, name, en, r_dic, stats_config):
 	news_headlines_monthly = defaultdict(lambda: [])
 	for year, annual_posts in comm_dic.items():
 		for month, monthly_posts in annual_posts.items():
@@ -76,24 +80,25 @@ def analyze_comments_helper(comm_dic, name, en, r_dic):
 					# Step 2
 					preproc_posts = strprocutil.preproc_posts(posts)
 					# Step 3
-					only_legit_words = strprocutil.wordcloud_preproc(preproc_posts, True)
+					only_legit_words = strprocutil.wordcloud_preproc(preproc_posts)
 					wordcount_generator(
 						only_legit_words, r_dic["monthly_wordcloud"], name, y_m_str
 					)
 					# Steps 4 & 5
 					keyterm_stats_generator(
 						preproc_posts, en, r_dic["monthly_sgrank"],
-						r_dic["monthly_textrank"], r_dic["monthly_statistics"], y_m_str
+						r_dic["monthly_textrank"], r_dic["monthly_statistics"],
+						y_m_str, stats_config
 					)
 	# Step 6
 	for month, headlines in news_headlines_monthly.items():
-		only_legit_words_hl = strprocutil.wordcloud_preproc(headlines, False)
+		only_legit_words_hl = strprocutil.wordcloud_preproc(headlines)
 		wordcount_generator(
 			only_legit_words_hl, r_dic["monthly_wordcloud_hl"], None, month
 		)
 		keyterm_stats_generator(
 			headlines, en, r_dic["monthly_sgrank_hl"], r_dic["monthly_textrank_hl"],
-			None, month
+			None, month, stats_config
 		)
 
 
@@ -113,7 +118,7 @@ def analyze_comments_helper(comm_dic, name, en, r_dic):
 """
 
 
-def analyze_posts(post_dic, en, username=""):
+def analyze_posts(post_dic, en, stats_config, username=""):
 	# URLs don't need to be divided by usernames, but wordclouds do.
 	url_count_monthly = defaultdict(lambda: defaultdict(lambda: 0))
 	news_headlines_monthly = defaultdict(lambda: [])
@@ -148,20 +153,20 @@ def analyze_posts(post_dic, en, username=""):
 						# Step 2
 						preproc_posts = strprocutil.preproc_posts(posts)
 						# Step 3
-						only_legit_words = strprocutil.wordcloud_preproc(preproc_posts, True)
+						only_legit_words = strprocutil.wordcloud_preproc(preproc_posts)
 						wordcount_generator(only_legit_words, monthly_wordcloud, name, y_m_str)
 						# Steps 4 & 5
 						keyterm_stats_generator(
 							preproc_posts, en, monthly_sgrank, monthly_textrank,
-							monthly_statistics, y_m_str
+							monthly_statistics, y_m_str, stats_config
 						)
 	# Step 6
 	for month, headlines in news_headlines_monthly.items():
-		only_legit_words_hl = strprocutil.wordcloud_preproc(headlines, False)
+		only_legit_words_hl = strprocutil.wordcloud_preproc(headlines)
 		wordcount_generator(only_legit_words_hl, monthly_wordcloud_hl, None, month)
 		keyterm_stats_generator(
 			headlines, en, monthly_sgrank_hl, monthly_textrank_hl,
-			None, month
+			None, month, stats_config
 		)
 	# Step 7
 	return collect_results(
@@ -187,7 +192,7 @@ def analyze_posts(post_dic, en, username=""):
 """
 
 
-def analyze_messages(mess_dic, en, username=""):
+def analyze_messages(mess_dic, en, stats_config, username=""):
 	# URLs don't need to be divided by usernames, but wordclouds do.
 	url_count_monthly = defaultdict(lambda: defaultdict(lambda: 0))
 	news_headlines_monthly = defaultdict(lambda: [])
@@ -223,20 +228,20 @@ def analyze_messages(mess_dic, en, username=""):
 							# Step 2
 							preproc_posts = strprocutil.preproc_posts(posts)
 							# Step 3
-							only_legit_words = strprocutil.wordcloud_preproc(preproc_posts, True)
+							only_legit_words = strprocutil.wordcloud_preproc(preproc_posts)
 							wordcount_generator(only_legit_words, monthly_wordcloud, name, y_m_str)
 							# Steps 4 & 5
 							keyterm_stats_generator(
 								preproc_posts, en, monthly_sgrank, monthly_textrank,
-								monthly_statistics, y_m_str
+								monthly_statistics, y_m_str, stats_config
 							)
 	# Step 6
 	for month, headlines in news_headlines_monthly.items():
-		only_legit_words_hl = strprocutil.wordcloud_preproc(headlines, False)
+		only_legit_words_hl = strprocutil.wordcloud_preproc(headlines)
 		wordcount_generator(only_legit_words_hl, monthly_wordcloud_hl, None, month)
 		keyterm_stats_generator(
 			headlines, en, monthly_sgrank_hl, monthly_textrank_hl,
-			None, month
+			None, month, stats_config
 		)
 	# Step 7
 	return collect_results(
@@ -265,7 +270,7 @@ def count_comments(comm_dic, en, count_config, username=""):
 		for target, pset in gset.items():
 			if target == "Own":
 				count_comments_helper(
-					pset, en, return_dic, username, g
+					pset, en, return_dic, username, g, count_config
 				)
 			else:
 				for name, person_posts in pset.items():
@@ -410,13 +415,13 @@ SUB_DIRECTORIES_FUNC_COUNT = {
 """
 
 
-def analyze(master_dic, username):
+def analyze(master_dic, username, stats_config):
 	en = textacy.load_spacy_lang("en_core_web_sm", disable=("parser",))
 	result_dic = {}
 	for sub in SUB_DIRECTORIES_FUNC_ANALYZE.keys():
 		print("Analyzing directory", sub)
 		result_dic[sub] = SUB_DIRECTORIES_FUNC_ANALYZE[sub](
-			master_dic[sub], en, username
+			master_dic[sub], en, stats_config, username
 		)
 	return result_dic
 
@@ -463,16 +468,32 @@ def wordcount_generator(posts, monthly_wordcloud, name, y_m_str):
 
 """
 	Helper method to collect key terms from a list of posts
-
-	TODO! Maybe implement a way for the user to fine-tune all these options?
-	Hint: Use a dictionary to pass in the parameters, just like spacy's config
-	system.
 """
 
 
 def keyterm_stats_generator(
-	posts, en, monthly_sgrank, monthly_textrank, monthly_statistics, y_m_str
+	posts, en, monthly_sgrank, monthly_textrank, monthly_statistics, y_m_str,
+	stats_config
 ):
+	sgrank_ngram = tuple(stats_config["SGrank_ngram"])
+	sgrank_norm = stats_config["SGrank_norm"]
+	sgrank_top_count = stats_config["SGrank_top_count"]
+	sgrank_top_ratio = stats_config["SGrank_top_ratio"]
+	textrank_norm = stats_config["Textrank_norm"]
+	textrank_top_count = stats_config["Textrank_top_count"]
+	textrank_top_ratio = stats_config["Textrank_top_ratio"]
+	if sgrank_top_count > 0:
+		sgtopn = sgrank_top_count
+	else:
+		sgtopn = sgrank_top_ratio
+	if textrank_top_count > 0:
+		trtopn = textrank_top_count
+	else:
+		trtopn = textrank_top_ratio
+	if sgrank_norm == "":
+		sgrank_norm = None
+	if textrank_norm == "":
+		textrank_norm = None
 	stopword_list = strprocutil.load_stopwords()
 	for i in range(len(posts)):
 		post = posts[i]
@@ -481,10 +502,10 @@ def keyterm_stats_generator(
 		curdoc = textacy.make_spacy_doc(post.lower(), lang=en)
 		curdoc_kt = textacy.make_spacy_doc(post, lang=en)
 		curdoc_ranks_sg = textacy.ke.sgrank(
-			curdoc_kt, ngrams=(1, 2, 3, 4), normalize="lower", topn=0.3
+			curdoc_kt, ngrams=sgrank_ngram, normalize=sgrank_norm, topn=sgtopn
 		)
 		curdoc_ranks_tr = textacy.ke.textrank(
-			curdoc_kt, normalize="lower", topn=0.3
+			curdoc_kt, normalize=textrank_norm, topn=trtopn
 		)
 		for word in curdoc_ranks_sg:
 			if word[0] not in stopword_list:
