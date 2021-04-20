@@ -11,15 +11,13 @@ from statistics import mean, median, stdev
 """
 
 
-def parse_results(result_dic, subdirectories, wordcloud_config):
-	res_dic = {
-		"monthly_cat": {},
-		"annual_cat": {},
-		"global_cat": {},
-		"monthly_cross": {},
-		"annual_cross": {},
-		"global_cross": {},
-	}
+def parse_results(
+	result_dic, subdirectories, wordcloud_config, analysis_period
+):
+	res_dic = {}
+	for per in analysis_period:
+		res_dic[per + "_cat"] = {}
+		res_dic[per + "_cross"] = {}
 	keys = [
 		"_url_count",
 		"_wordcloud",
@@ -30,13 +28,13 @@ def parse_results(result_dic, subdirectories, wordcloud_config):
 		"_sgrank_hl",
 		"_textrank_hl",
 	]
-	periods = list(set([key.split("_")[0] for key in res_dic.keys()]))
+	
 	for sub in subdirectories:
-		for per in periods:
+		for per in analysis_period:
 			res_dic[(per + "_cat")][sub] = parse_results_helper(
 				result_dic[sub], per, keys, False, wordcloud_config
 			)
-	for per in periods:
+	for per in analysis_period:
 		res_dic[(per + "_cross")] = parse_results_helper(
 			result_dic, per, keys, True, wordcloud_config
 		)
@@ -250,13 +248,12 @@ PARSE_FUNC = {
 }
 
 
-def parse_counts(count_dic, subdirectories):
+def parse_counts(count_dic, subdirectories, per):
 	result_dic = defaultdict(
 		lambda: defaultdict(
 			lambda: {}
 		)
 	)
-	per = ["monthly", "annual", "global"]
 	for sub in subdirectories:
 		for p in per:
 			if p != "monthly":

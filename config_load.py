@@ -11,6 +11,7 @@ import os.path as op
 	@author: DeltaSierra4
 """
 
+#TODO! Include a portion to allow the user to select whether they want global, annual, or monthly results.
 
 """
 	Check if all basic fields are present and are valid entries.
@@ -19,7 +20,14 @@ import os.path as op
 
 def basic_check(config_dic):
 	config_keys = config_dic.keys()
-	basic_fields = ["Language", "Username", "Datadir", "Post_types"]
+	basic_fields = [
+		"Language", 
+		"Username", 
+		"Datadir", 
+		"Resultsdir",
+		"Post_types",
+		"Analysis_period"
+	]
 	for field in basic_fields:
 		try:
 			assert field in config_keys
@@ -28,9 +36,24 @@ def basic_check(config_dic):
 
 	data_dir = config_dic["Datadir"]
 	try:
+		assert len(data_dir) != 0
+	except AssertionError:
+		return {
+			"Invalid field": "Invalid \"Datadir\" field. Provide a path to \
+			the folder that contains the results directory."
+		}
+	try:
 		assert op.exists(data_dir)
 	except AssertionError:
 		return {"FNF": "{} is not a valid path.".format(data_dir)}
+
+	try:
+		assert len(config_dic["Resultsdir"]) != 0
+	except AssertionError:
+		return {
+			"Invalid field": "Invalid \"Resultsdir\" field. Provide a name for \
+			the results folder that will contain your analysis results."
+		}
 
 	post_types = config_dic["Post_types"]
 	try:
@@ -41,6 +64,17 @@ def basic_check(config_dic):
 		return {
 			"Invalid field": "Invalid \"Post_types\" field. See the README file \
 			for more details on what to fill in this field."
+		}
+
+	analysis_period = config_dic["Analysis_period"]
+	try:
+		assert isinstance(analysis_period, list)
+		assert len(analysis_period) != 0
+		assert set(analysis_period) <= {"annual", "monthly", "global"}
+	except AssertionError:
+		return {
+			"Invalid field": "Invalid \"Analysis_period\" field. See the README \
+			file for more details on what to fill in this field."
 		}
 
 	return None
@@ -99,7 +133,9 @@ def post_count_config_check(config_dic):
 	try:
 		char_limit_min = count_config["Char_limit_min"]
 		char_limit_max = count_config["Char_limit_max"]
-		assert char_limit_min < char_limit_max
+		bothzero = (char_limit_min == 0 and char_limit_max == 0)
+		min_lesser_than_max = char_limit_min < char_limit_max
+		assert bothzero or min_lesser_than_max
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid values in \"Count_config\" field. \
@@ -108,7 +144,9 @@ def post_count_config_check(config_dic):
 	try:
 		word_limit_min = count_config["Word_limit_min"]
 		word_limit_max = count_config["Word_limit_max"]
-		assert word_limit_min < word_limit_max
+		bothzero = (word_limit_min == 0 and word_limit_max == 0)
+		min_lesser_than_max = word_limit_min < word_limit_max
+		assert bothzero or min_lesser_than_max
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid values in \"Count_config\" field. \

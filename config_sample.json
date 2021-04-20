@@ -2,7 +2,9 @@
 	"Language": "en",
 	"Username": "John Doe",
 	"Datadir": "/path/to/JSON_Files",
+	"Resultsdir": "results",
 	"Post_types": ["comments", "messages", "posts"],
+	"Analysis_period": ["monthly"],
 	"Target_names": ["Joe Blow", "Foo Bar", "Jane Doe"],
 	"Count_config": {
 		"Char_limit_min": 0,

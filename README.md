@@ -45,7 +45,7 @@ Each directory within the results directory will store Wordcloud results, keyter
 * annual_cat, monthly_cat, global_cat: Results from each category of posts (comments, messages, or regular posts on news feed) grouped by year, month, or total timespan, respectively.
 * annual_cross, monthly_cross, global_cross: Results from all category of posts grouped by year, month, or total timespan, respectively.
 
-Within each subdirectory of post category (comments, messages, or posts) or directly in each _cross subdirectory are directories that will store relevant results.
+Within each subdirectory of post category (comments, messages, or posts) or directly in each "\_cross" subdirectory are directories that will store relevant results.
 
 * sgrank, sgrank_hl: Wordcloud of key terms extracted by the SGRank algorithm on your posts or headlines from URLs linked, if any exist, respectively.
 * textrank, textrank_hl: Wordcloud of key terms extracted by the TextRank algorithm on your posts or headlines from URLs linked, if any exist, respectively.
@@ -62,6 +62,9 @@ Unless otherwise stated, all entries and user names are expected to be enclosed 
 * Language field: Set to "en" for English. May include "ko" and "jp" eventually.
 * Username field: Write your Facebook username.
 * Datadir field: Put the path to the directory containing your Social Media data. If it is installed in the same folder as the codebase, it is expected to be something like "<Folder name>", where <Folder name> is the folder that contains your Social Media data.
+* Resultsdir field: Provide a name for the folder that will contain your results. Default is set to "results".
+* Analysis_period field: Provide a combination of any of the following: `"monthly"`, `"annual"`, and `"global"`. The options must be enclosed in square brackets as shown in the example config.json file. Default is set to ["monthly"].
+NB! It is strongly recommended to choose only one of the three options to keep runtime down to a minimum.
 * Post_types field: List of types of posts you wish to analyze. Default is set to ["comments", "messages", "posts"]. All items must be kept in square brackets as shown in the sample configuration json file and must be any combination of the three available options above.
 * Target_names: List of usernames that you wish to specifically analyze your interactions with. Default is set to an empty list, i.e. [].
 

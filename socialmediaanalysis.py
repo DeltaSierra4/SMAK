@@ -28,7 +28,7 @@ def main(config_path):
 
 	config, err = config_load.parse_config(config_path)
 	if err is not None:
-		config_load.print_error(err)
+		print(err.values())
 		return
 	data_dir = config["Datadir"]
 	username = strprocutil.convert_unicode(config["Username"])
@@ -72,25 +72,35 @@ def main(config_path):
 	result_dic = postanalyzer.analyze(master_dic, username, analyzer_config)
 
 	smakstats_config = config["SMAKstats_config"]
+	analysis_period = config["Analysis_period"]
 	pruned_result_dic = smakstats.parse_results(
-		result_dic, sub_directories, smakstats_config
+		result_dic, sub_directories, smakstats_config, analysis_period
 	)
 
 	# Save parse results as JSON file.
 	with open("./parse_results.json", 'w+') as f2:
 		json.dump(pruned_result_dic, f2, indent=4, sort_keys=True)
 
-	pruned_count_dic = smakstats.parse_counts(post_count_dic, sub_directories)
+	pruned_count_dic = smakstats.parse_counts(
+		post_count_dic, sub_directories, analysis_period
+	)
 
 	# Save count results as JSON file.
 	with open("./count_results.json", 'w+') as f2:
 		json.dump(pruned_count_dic, f2, indent=4, sort_keys=True)
 
 	visualizer_config = config["Visualizer_config"]
-	resultvisualizer.wordcloud_gen(pruned_result_dic, visualizer_config)
-	resultvisualizer.url_chart_gen(pruned_result_dic, visualizer_config)
-	resultvisualizer.stat_chart_gen(pruned_result_dic)
-	resultvisualizer.stat_chart_gen_count(pruned_count_dic, visualizer_config)
+	results_dir = config["Resultsdir"]
+	resultvisualizer.wordcloud_gen(
+		pruned_result_dic, visualizer_config, results_dir
+	)
+	resultvisualizer.url_chart_gen(
+		pruned_result_dic, visualizer_config, results_dir
+	)
+	resultvisualizer.stat_chart_gen(pruned_result_dic, results_dir)
+	resultvisualizer.stat_chart_gen_count(
+		pruned_count_dic, visualizer_config, results_dir
+	)
 
 
 if __name__ == "__main__":

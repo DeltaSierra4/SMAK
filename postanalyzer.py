@@ -11,6 +11,19 @@ import strprocutil
 	all posts and performs NLP analysis such as key term extraction, word
 	statistics, and sentiment detection.
 
+	Now we have a dictionary of all posts divided into comments, posts, and
+	messages, all with associated dates and hours.
+	Analytics will be performed on multiple different levels: Each category,
+	each individual involved, and each month.
+	To be implemented: Analytics based on specific days of month, time of the
+	day, and so on.
+	The level of analytics gradually increases in level: Monthly -> yearly ->
+	All time / Low category -> mid category -> high category (e.g. individual
+	-> group -> global)
+	Order of priority within dictionary: category > individual > time
+	Results will be presented in a format that reflects the original
+	dictionary.
+
 	@author: DeltaSierra4
 """
 

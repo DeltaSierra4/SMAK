@@ -17,8 +17,7 @@ import os
 """
 
 
-def wordcloud_gen(result_dic, wordcloud_config):
-	results_dir = "results"
+def wordcloud_gen(result_dic, wordcloud_config, results_dir):
 	create_dir(results_dir)
 	for set_type, batch in result_dic.items():
 		set_dir = create_dir(results_dir, set_type)
@@ -73,8 +72,7 @@ def wordcloud_gen_cross(result_dic, set_type, init_path, wordcloud_config):
 					os.rmdir(user_dir)
 
 
-def url_chart_gen(result_dic, chart_config):
-	results_dir = "results"
+def url_chart_gen(result_dic, chart_config, results_dir):
 	create_dir(results_dir)
 	for set_type, batch in result_dic.items():
 		set_dir = create_dir(results_dir, set_type)
@@ -115,8 +113,7 @@ def urlchart_gen_cross(result_dic, set_type, init_path, chart_config):
 			os.rmdir(stat_dir)
 
 
-def stat_chart_gen(result_dic):
-	results_dir = "results"
+def stat_chart_gen(result_dic, results_dir):
 	create_dir(results_dir)
 	for set_type, batch in result_dic.items():
 		if "global" in set_type:
@@ -177,13 +174,12 @@ def statchart_gen_cross(result_dic, set_type, init_path):
 			os.rmdir(stat_dir)
 
 
-def stat_chart_gen_count(count_dic, count_vis_config):
+def stat_chart_gen_count(count_dic, count_vis_config, results_dir):
 	extra_step_per_cat = {
 		"comments": 2,
 		"messages": 1,
 		"posts": 0,
 	}
-	results_dir = "results"
 	create_dir(results_dir)
 	postcount_dir = create_dir(results_dir, "post_count_stats")
 	for cat, cat_results in count_dic.items():
@@ -226,6 +222,10 @@ def stat_chat_gen_count_final(key, dic, dirname, sort_by, count_vis_config):
 	# during that timeframe.
 	stat_combiner = defaultdict(lambda: {})
 	new_dir = create_dir(dirname, key)
+	if len(dic.keys()) < 2:
+		# plt does not display charts with single data entries correctly.
+		# We skip these results.
+		continue
 	for inner_key, stat_dic in dic.items():
 		if inner_key == "global":
 			continue
