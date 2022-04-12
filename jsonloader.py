@@ -15,13 +15,13 @@ import strprocutil
 """
 	load_json() from directory that contains json files with your comments
 	and posts. This is a wrapper method to load individual json files by their
-	specific categories: "comments", "messages", and "posts"
+	specific categories: "comments_and_reactions", "messages", and "posts"
 """
 
 
 def load_json(data_dir, subdir, username, target_names):
 	component_dir = op.join(data_dir, subdir)
-	if subdir == "comments":
+	if subdir == "comments_and_reactions":
 		component_dir = op.join(component_dir, "comments.json")
 		return load_comment_json(component_dir, username, target_names)
 	elif subdir == "posts":
@@ -63,7 +63,7 @@ def load_comment_json(comment_dir, username, target_names):
 		},
 	}
 	with open(comment_dir, 'r') as f:
-		data = json.load(f)["comments"]
+		data = json.load(f)["comments_v2"]
 		for data_row in data:
 			if invalid_comment(data_row):
 				continue

@@ -28,7 +28,7 @@ def main(config_path):
 
 	config, err = config_load.parse_config(config_path)
 	if err is not None:
-		print(err.values())
+		print("{}: {}".format(list(err.keys())[0], list(err.values())[0]))
 		return
 	data_dir = config["Datadir"]
 	username = strprocutil.convert_unicode(config["Username"])

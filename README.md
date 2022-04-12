@@ -33,7 +33,7 @@ $ pip install -r requirements.txt
 4. Download and unzip all .zip files created in the same directory as the SMAK codebase.
 5. Run the following command in the current directory.
 ```
-$ python3 socialmediaanalysis.py <name of directory containing all Facebook & Messenger data> <your name on Facebook and Messenger>
+$ python3 socialmediaanalysis.py <name of your config file, default is config_sample.json>
 ```
 6. The results of the analysis are printed out in format of JSON. `parse_results.json` stores results containing your posting behavior over time in different categories of posts, whereas `count_results.json` stores results pertaining to your posting behavior with respect to other Facebook users across time.
 7. In addition, relevant wordclouds and charts will be generated in the results directory where the code is saved.

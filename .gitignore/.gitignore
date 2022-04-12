@@ -1,4 +1,6 @@
 test*
 bigdata/**
 dataset/**
+results*
 config_test.json
+__pycache__

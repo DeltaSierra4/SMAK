@@ -40,7 +40,7 @@ def basic_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid \"Datadir\" field. Provide a path to \
-			the folder that contains the results directory."
+the folder that contains the results directory."
 		}
 	try:
 		assert op.exists(data_dir)
@@ -52,18 +52,18 @@ def basic_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid \"Resultsdir\" field. Provide a name for \
-			the results folder that will contain your analysis results."
+the results folder that will contain your analysis results."
 		}
 
 	post_types = config_dic["Post_types"]
 	try:
 		assert isinstance(post_types, list)
 		assert len(post_types) != 0
-		assert set(post_types) <= {"comments", "posts", "messages"}
+		assert set(post_types) <= {"comments_and_reactions", "posts", "messages"}
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid \"Post_types\" field. See the README file \
-			for more details on what to fill in this field."
+for more details on what to fill in this field."
 		}
 
 	analysis_period = config_dic["Analysis_period"]
@@ -74,7 +74,7 @@ def basic_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid \"Analysis_period\" field. See the README \
-			file for more details on what to fill in this field."
+file for more details on what to fill in this field."
 		}
 
 	return None
@@ -94,8 +94,8 @@ def name_check(config_dic):
 		except AssertionError:
 			return {
 				"Invalid field": "Invalid name in \"Target_names\" field: {}. \
-				See the README file for more details on what to fill in this \
-				field.".format(str(name))
+See the README file for more details on what to fill in this \
+field.".format(str(name))
 			}
 	return None
 
@@ -128,7 +128,7 @@ def post_count_config_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid \"Count_config\" field. See the README file \
-			for more details on what to fill in this field."
+for more details on what to fill in this field."
 		}
 	try:
 		char_limit_min = count_config["Char_limit_min"]
@@ -139,7 +139,7 @@ def post_count_config_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid values in \"Count_config\" field. \
-			\"Char_limit_min\" must be lower than \"Char_limit_max\"."
+\"Char_limit_min\" must be lower than \"Char_limit_max\"."
 		}
 	try:
 		word_limit_min = count_config["Word_limit_min"]
@@ -150,7 +150,7 @@ def post_count_config_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid values in \"Count_config\" field. \
-			\"Word_limit_min\" must be lower than \"Word_limit_max\"."
+\"Word_limit_min\" must be lower than \"Word_limit_max\"."
 		}
 
 	return None
@@ -198,7 +198,7 @@ def analyzer_config_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid \"Analyzer_config\" field. See the README file \
-			for more details on what to fill in this field."
+for more details on what to fill in this field."
 		}
 
 	sgrank_ngram = analyzer_config["SGrank_ngram"]
@@ -207,7 +207,7 @@ def analyzer_config_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid values in \"Analyzer_config\" field. \
-			\"SGrank_ngram\" cannot be an empty list."
+\"SGrank_ngram\" cannot be an empty list."
 		}
 	old_value = sgrank_ngram[0] - 1
 	try:
@@ -219,8 +219,8 @@ def analyzer_config_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid values in \"Analyzer_config\" field. \
-			\"SGrank_ngram\" must be a list of consecutive integers greater \
-			than 0."
+\"SGrank_ngram\" must be a list of consecutive integers greater \
+than 0."
 		}
 
 	sgrank_int = analyzer_config["SGrank_top_count"]
@@ -230,8 +230,8 @@ def analyzer_config_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid values in \"Analyzer_config\" field. \
-			\"SGrank_top_count\" and \"SGrank_top_ratio\" cannot both be set \
-			to 0."
+\"SGrank_top_count\" and \"SGrank_top_ratio\" cannot both be set \
+to 0."
 		}
 
 	textrank_int = analyzer_config["Textrank_top_count"]
@@ -241,8 +241,8 @@ def analyzer_config_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid values in \"Analyzer_config\" field. \
-			\"Textrank_top_count\" and \"Textrank_top_ratio\" cannot both be \
-			set to 0."
+\"Textrank_top_count\" and \"Textrank_top_ratio\" cannot both be \
+set to 0."
 		}
 
 	return None
@@ -274,7 +274,7 @@ def smakstats_config_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid \"SMAKstats_config\" field. See the README file \
-			for more details on what to fill in this field."
+for more details on what to fill in this field."
 		}
 
 	return None
@@ -311,7 +311,7 @@ def visualizer_config_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid \"Visualizer_config\" field. See the README file \
-			for more details on what to fill in this field."
+for more details on what to fill in this field."
 		}
 
 	try:
@@ -321,8 +321,8 @@ def visualizer_config_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid values in \"Visualizer_config\" field. \
-			\"URL_chart_lower_limit\" must be lower than \
-			\"URL_chart_upper_limit\"."
+\"URL_chart_lower_limit\" must be lower than \
+\"URL_chart_upper_limit\"."
 		}
 
 	try:
@@ -332,7 +332,7 @@ def visualizer_config_check(config_dic):
 	except AssertionError:
 		return {
 			"Invalid field": "Invalid values in \"Visualizer_config\" field. \
-			\"min_data_count\" must be lower than \"max_data_count\"."
+\"min_data_count\" must be lower than \"max_data_count\"."
 		}
 
 	return None

@@ -225,7 +225,7 @@ def stat_chat_gen_count_final(key, dic, dirname, sort_by, count_vis_config):
 	if len(dic.keys()) < 2:
 		# plt does not display charts with single data entries correctly.
 		# We skip these results.
-		continue
+		return
 	for inner_key, stat_dic in dic.items():
 		if inner_key == "global":
 			continue
