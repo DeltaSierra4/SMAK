@@ -1,3 +1,4 @@
 test*
 bigdata/**
 dataset/**
+config_test.json

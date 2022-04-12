@@ -1,0 +1,37 @@
+{
+	"Language": "en",
+	"Username": "John Doe",
+	"Datadir": "/path/to/JSON_Files",
+	"Resultsdir": "results",
+	"Post_types": ["comments", "messages", "posts"],
+	"Analysis_period": ["monthly"],
+	"Target_names": ["Joe Blow", "Foo Bar", "Jane Doe"],
+	"Count_config": {
+		"Char_limit_min": 0,
+		"Char_limit_max": 0,
+		"Word_limit_min": 0,
+		"Word_limit_max": 0
+	},
+	"Analyzer_config": {
+		"SGrank_ngram": [1, 2, 3, 4, 5, 6],
+		"SGrank_norm": "lower",
+		"SGrank_top_count": 0,
+		"SGrank_top_ratio": 0.3,
+		"Textrank_norm": "lower",
+		"Textrank_top_count": 0,
+		"Textrank_top_ratio": 0.3
+	},
+	"SMAKstats_config": {
+		"Keyterm_limit": 100,
+		"Wordcount_limit": 500
+	},
+	"Visualizer_config": {
+		"Wordcloud_width": 1600,
+		"Wordcloud_height": 1200,
+		"Wordcloud_limit": 200,
+		"URL_chart_upper_limit": 30,
+		"URL_chart_lower_limit": 5,
+		"Min_data_count": 5,
+		"Max_data_count": 20
+	}
+}
