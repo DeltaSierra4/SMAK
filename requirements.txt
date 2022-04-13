@@ -3,3 +3,4 @@ textacy==0.10.1
 plac==0.9.6
 matplotlib==3.4.1
 wordcloud==1.8.1
+spacy-transformers==0.6.2
